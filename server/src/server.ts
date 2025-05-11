@@ -1,3 +1,4 @@
+console.log("%%%% EXECUTING LATEST SERVER.TS - VERSION XYZ %%%%"); // Add a very visible log
 import express from 'express';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url'; // Import fileURLToPath
