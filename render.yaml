@@ -1,0 +1,69 @@
+# render.yaml
+# This file should be at the root of your repository.
+
+# Optional: Specify a version for the Render blueprint specification.
+version: "1"
+
+services:
+  #------------------------------------
+  # Back-End Service (Node.js Server)
+  #------------------------------------
+  - type: web # Use 'web' if it's an HTTP server, 'worker' for background jobs.
+    name: my-app-server # Choose a name for your server service
+    env: node # Specify the environment (Node.js)
+    region: oregon # Optional: Choose a region, e.g., oregon, frankfurt
+    plan: free # Optional: Choose a plan (free tier available)
+    
+    # --- Build Configuration ---
+    rootDir: server # IMPORTANT: Set the root directory for this service
+    # Render will typically run 'npm install' or 'yarn install' in 'rootDir' automatically.
+    # If Bun is used by default and you prefer npm for installs:
+    # You might need to set an environment variable like 'NPM_VERSION' or 'YARN_VERSION'
+    # or check Render's docs for forcing npm. Usually, auto-detection works.
+    buildCommand: npm run build # Runs 'tsc' as per your server/package.json
+    
+    # --- Start Configuration ---
+    startCommand: npm start # Runs 'node dist/server.js' as per server/package.json
+
+    # --- Environment Variables ---
+    # Set these in the Render dashboard under your service's Environment section
+    # Example:
+    # envVars:
+    #   - key: MONGODB_URI
+    #     sync: false # Don't sync if it's a secret managed in Render
+    #   - key: JWT_SECRET_KEY
+    #     sync: false
+    #   - key: NODE_ENV # Often set to 'production' automatically by Render
+    #     value: production 
+
+  #------------------------------------
+  # Front-End Service (Static Site)
+  #------------------------------------
+  - type: static # For static front-ends like React, Vue, Angular builds
+    name: my-app-client # Choose a name for your client service
+    env: static # Specify the environment
+    region: oregon # Optional: Choose a region
+    plan: free # Optional: Choose a plan
+    
+    # --- Build Configuration ---
+    rootDir: client # IMPORTANT: Set the root directory for this service
+    # Render will typically run 'npm install' or 'yarn install' in 'rootDir' automatically.
+    buildCommand: npm run build # Runs 'vite build' as per your client/package.json
+    
+    # --- Static Publishing Configuration ---
+    # Directory (relative to 'rootDir') where build output is stored.
+    publishDir: dist # Vite outputs to 'dist' inside the 'client' directory
+    
+    # --- Optional: Rewrite rules for SPAs (Single Page Applications) ---
+    # This ensures that all paths are served by index.html for client-side routing.
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
+
+# Optional: Databases (Example for MongoDB if using Render's managed DB)
+# databases:
+#   - name: my-mongodb
+#     databaseName: myAppDatabase # The actual name of the database to create
+#     ipAllowList: [] # Add IPs that can connect, or leave empty for open (not recommended for prod)
+#     plan: free # Check available plans
