@@ -1,10 +1,15 @@
 import express from 'express';
 import path from 'node:path';
+import { fileURLToPath } from 'node:url'; // Import fileURLToPath
 import { ApolloServer } from 'apollo-server-express';
 import db from './config/connection.js';
 import { typeDefs, resolvers } from './schemas/index.js'; // Ensure this path is correct
 import { authMiddleware } from './services/auth.js'; // Ensure this path is correct
 // Removed duplicate: import type express from 'express'; 
+
+// Recreate __dirname for ES module scope
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express(); // Let TypeScript infer the type
 const PORT = process.env.PORT || 3001;
@@ -13,6 +18,7 @@ const server = new ApolloServer({
   typeDefs,
   resolvers,
   context: authMiddleware,
+  cache: 'bounded', // Recommended for Apollo Server v3+ to prevent DoS
 });
 
 app.use(express.urlencoded({ extended: true }));
