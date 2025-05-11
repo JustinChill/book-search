@@ -20,6 +20,9 @@ services:
     # If Bun is used by default and you prefer npm for installs:
     # You might need to set an environment variable like 'NPM_VERSION' or 'YARN_VERSION'
     # or check Render's docs for forcing npm. Usually, auto-detection works.
+    # Explicitly run npm install in the server directory context before the build command.
+    # Ensure your package-lock.json (if you use one) is up-to-date.
+    preDeployCommand: npm install 
     buildCommand: npm run build # Runs 'tsc' as per your server/package.json
     
     # --- Start Configuration ---
